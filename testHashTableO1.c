@@ -15,7 +15,7 @@ int main ( int argc, char **argv ) {
     char *word;
     uint16_t chunkStart = 0;
     uint16_t readBytes = 0;
-    hashTable_t *hashTable = hashTable_create ( 65535 );
+    hashTable_t *hashTable = hashTable_create ( 65535 * 128 );
     hashTable_rc_t hashTable_rc = HT_FAILURE;
 
     if ( argc < 2 ) {
