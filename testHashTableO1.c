@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <hashTableO1.h>
 
-#define BUF_SIZE 1024
+#define BUF_SIZE 4096
 
 int main ( int argc, char **argv ) {
     int rc = EXIT_FAILURE;
@@ -35,12 +35,25 @@ int main ( int argc, char **argv ) {
 
         while ( charIndex < chunkStart + readBytes ) {
             if ( buffer[charIndex] == '\n' ) {
+                size_t *oldValue = NULL, *value = malloc ( sizeof ( size_t ) );
+                *value = 1;
                 buffer[charIndex] = '\0';
                 word = buffer + wordStart;
-                if ( ( hashTable_rc = hashTable_add_entry ( hashTable, word, (void *) word ) ) != HT_SUCCESS )
-                    fprintf ( stderr, "Cannot add entry %s to hashTable: (%d)\n", word, hashTable_rc );
-                else
+                if ( ( hashTable_rc = hashTable_add_entry ( hashTable, word, (void *) value ) ) != HT_SUCCESS ) {
+                    if ( hashTable_rc == HT_EXISTS ) {
+                        if ( ( oldValue = hashTable_update_entry ( hashTable, word, (void *) value ) ) == NULL ) {
+                            fprintf ( stderr, "Cannot update entry %s\n", word );
+                        } else {
+                            *value = *oldValue + 1;
+                            free ( oldValue );
+                            printf ( "%s updated\n", word );
+                        }
+                    } else {
+                        fprintf ( stderr, "Cannot add entry %s to hashTable: (%d)\n", word, hashTable_rc );
+                    }
+                } else {
                     printf ( "%s added\n", word );
+                }
                 wordStart = charIndex + 1;
             }
 
@@ -65,13 +78,13 @@ int main ( int argc, char **argv ) {
 
         while ( charIndex < chunkStart + readBytes ) {
             if ( buffer[charIndex] == '\n' ) {
-                char *value = NULL;
+                size_t *value = NULL;
                 buffer[charIndex] = '\0';
                 word = buffer + wordStart;
-                if ( ( value = (char *) hashTable_find_entry_value ( hashTable, word ) ) == NULL )
+                if ( ( value = (size_t *) hashTable_find_entry_value ( hashTable, word ) ) == NULL )
                     fprintf ( stderr, "Cannot find entry %s in hashTable\n", word );
                 else 
-                    printf ( "found entry %s: %s\n", word, value );
+                    printf ( "found entry %s: %d\n", word, (int) *value );
                 wordStart = charIndex + 1;
             }
 
@@ -88,7 +101,7 @@ int main ( int argc, char **argv ) {
         }
     }
 
-    rewind ( infile );
+    /*rewind ( infile );
     chunkStart = 0;
     
     while ( ( readBytes = fread ( (void *)((uint64_t) &buffer + chunkStart), 1, BUF_SIZE - chunkStart, infile ) ) > 0 ) {
@@ -116,7 +129,7 @@ int main ( int argc, char **argv ) {
         } else {
             break;
         }
-    }
+    }*/
 
     rc = EXIT_SUCCESS;
 over:

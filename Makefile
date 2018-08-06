@@ -4,7 +4,7 @@ LIBS=-L/usr/local/lib
 all: libHashTableO1
 
 test: testHashTableO1
-	./testHashTableO1 test-names.txt
+	./testHashTableO1 test-names-1m.txt
 
 testHashTableO1: Makefile hashTableO1.h testHashTableO1.c
 	gcc ${CFLAGS} -o testHashTableO1 testHashTableO1.c ${LIBS} -lHashTableO1

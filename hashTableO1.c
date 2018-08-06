@@ -92,7 +92,7 @@ hashTable_rc_t hashTable_add_entry ( hashTable_t *hashTable, const char *key, vo
     }
 
     if ( next == NULL ) {
-        if ( last != NULL )
+        if ( last == NULL )
             return HT_FAILURE;
         last->next = hashTable_entry_create ( key, value );
         return HT_SUCCESS;
@@ -120,6 +120,26 @@ hashTable_entry_t *hashTable_find_entry ( hashTable_t *hashTable, const char *ke
 void *hashTable_find_entry_value ( hashTable_t *hashTable, const char *key ) {
     hashTable_entry_t *entry = hashTable_find_entry ( hashTable, key );
     return entry ? entry->value : NULL;
+};
+
+void *hashTable_update_entry ( hashTable_t *hashTable, const char *key, void *value ) {
+    void *rc = NULL;
+    hashTable_entry_t *entry = NULL;
+    unsigned long hashedKey = 0;
+
+    hashedKey = hash ( key ) % hashTable->size;
+    entry = hashTable->entries[hashedKey];
+
+    while ( entry != NULL && strncmp ( key, entry->key, strlen ( key ) ) )
+        entry = entry->next;
+
+    if ( !entry )
+        return rc;
+
+    rc = entry->value;
+    entry->value = value;
+
+    return rc;
 };
 
 hashTable_rc_t hashTable_remove_entry ( hashTable_t *hashTable, const char *key ) {
