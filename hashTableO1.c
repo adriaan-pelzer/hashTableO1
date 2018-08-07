@@ -53,15 +53,11 @@ void hashTable_entry_free ( hashTable_entry_t *entry ) {
 hashTable_entry_t *hashTable_entry_create ( const char *key, void *value ) {
     hashTable_entry_t *rc = NULL, *_rc = NULL;
 
-    if ( ( _rc = malloc ( sizeof ( hashTable_entry_t ) ) ) == NULL ) {
+    if ( ( _rc = calloc ( 1, sizeof ( hashTable_entry_t ) ) ) == NULL )
         goto  over;
-    }
 
-    memset ( _rc, 0, sizeof ( hashTable_entry_t ) );
-
-    if ( ( _rc->key = strndup ( key, strlen ( key ) ) ) == NULL ) {
+    if ( ( _rc->key = strndup ( key, strlen ( key ) ) ) == NULL )
         goto over;
-    }
 
     _rc->value = value;
     rc = _rc;
