@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #ifndef _HASHTABLE_H_
 #define _HASHTABLE_H_
 
@@ -21,10 +23,10 @@ typedef struct hashTable {
 } hashTable_t;
 
 hashTable_t *hashTable_create ( size_t size );
-enum hashTable_rc hashTable_add_entry ( struct hashTable *hashTable, const char *key, void *value );
-void *hashTable_find_entry_value ( struct hashTable *hashTable, const char *key );
+enum hashTable_rc hashTable_add_entry ( hashTable_t *hashTable, const char *key, void *value );
+void *hashTable_find_entry_value ( hashTable_t *hashTable, const char *key );
 void *hashTable_update_entry ( hashTable_t *hashTable, const char *key, void *value );
-enum hashTable_rc hashTable_remove_entry ( struct hashTable *hashTable, const char *key );
-void hashTable_free ( struct hashTable *hashTable );
+enum hashTable_rc hashTable_remove_entry ( hashTable_t *hashTable, const char *key );
+void hashTable_free ( hashTable_t *hashTable );
 
 #endif
